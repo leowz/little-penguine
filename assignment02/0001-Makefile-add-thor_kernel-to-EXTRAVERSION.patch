@@ -1,0 +1,26 @@
+From c3531952bd369283d9dd0c3fe092984c303b3145 Mon Sep 17 00:00:00 2001
+From: weng zhang <weng.zhang@icloud.com>
+Date: Sun, 7 Dec 2025 21:39:32 +0000
+Subject: [PATCH] Makefile: add thor_kernel to EXTRAVERSION
+
+Signed-off-by: weng zhang <weng.zhang@icloud.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 2f545ec1690f..deb95ea230bc 100644
+--- a/Makefile
++++ b/Makefile
+@@ -2,7 +2,7 @@
+ VERSION = 6
+ PATCHLEVEL = 18
+ SUBLEVEL = 0
+-EXTRAVERSION =
++EXTRAVERSION = -thor_kernel
+ NAME = Baby Opossum Posse
+ 
+ # *DOCUMENTATION*
+-- 
+2.52.0
+
