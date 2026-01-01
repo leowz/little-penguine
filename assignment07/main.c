@@ -108,9 +108,15 @@ static ssize_t foo_write(struct file *file, const char __user *buf,
 		return -EINVAL;
 
 	mutex_lock(&foo_mutex);
+	if (*ppos ==0) {
+		memset(foo_buf, 0, PAGE_SIZE);
+		foo_len = 0;
+	} 
 	ret = simple_write_to_buffer(foo_buf, PAGE_SIZE, ppos, buf, count);
-	if (ret > 0)
-		foo_len = ret;
+	if (ret > 0) {
+  		if (*ppos > foo_len)
+			foo_len = *ppos;
+  	}
 	mutex_unlock(&foo_mutex);
 
 	return ret;
