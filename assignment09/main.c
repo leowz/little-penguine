@@ -48,8 +48,8 @@ static int mymounts_show(struct seq_file *m, void *v)
 		if (IS_ERR(path_name))
 			continue;
 
-		/* Print: device_name mount_point */
-		seq_printf(m, "%s %s\n",
+		/* Print: device_name mount_point (aligned columns) */
+		seq_printf(m, "%-16s %s\n",
 			   mnt->mnt_devname ? mnt->mnt_devname : "none",
 			   path_name);
 	}
