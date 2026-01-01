@@ -30,8 +30,7 @@ static ssize_t fortytwo_write(struct file *file, const char __user *buf,
 		return -EINVAL;
 
 	len = simple_write_to_buffer(kbuf, LOGIN_LEN, ppos, buf, count);
-	if (len < 0)
-		return len;
+	if (len < 0) return len;
 
 	kbuf[len] = '\0';
 
@@ -51,6 +50,7 @@ static struct miscdevice fortytwo_device = {
 	.minor	= MISC_DYNAMIC_MINOR,
 	.name	= "fortytwo",
 	.fops	= &fortytwo_fops,
+	.mode	= 0666,
 };
 
 static int __init fortytwo_init(void)
