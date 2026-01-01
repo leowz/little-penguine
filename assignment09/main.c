@@ -12,6 +12,7 @@
 #include <linux/mnt_namespace.h>
 #include <linux/fs_struct.h>
 #include <linux/path.h>
+#include <linux/rbtree.h>
 #include <../fs/mount.h>
 
 MODULE_LICENSE("GPL");
@@ -24,7 +25,8 @@ static int mymounts_show(struct seq_file *m, void *v)
 {
 	struct mount *mnt;
 	struct mnt_namespace *ns;
-	struct path root_path;
+	struct path mnt_path;
+	struct rb_node *node;
 	char *buf;
 	char *path_name;
 
@@ -32,16 +34,17 @@ static int mymounts_show(struct seq_file *m, void *v)
 	if (!buf)
 		return -ENOMEM;
 
-	/* Get current process root for path resolution */
-	get_fs_root(current->fs, &root_path);
-
 	/* Get current mount namespace */
 	ns = current->nsproxy->mnt_ns;
 
-	/* Iterate through all mounts in the namespace */
-	list_for_each_entry(mnt, &ns->list, mnt_list) {
+	/* Iterate through all mounts in the namespace (rb_tree in 6.16+) */
+	for (node = rb_first(&ns->mounts); node; node = rb_next(node)) {
+		mnt = rb_entry(node, struct mount, mnt_node);
+
 		/* Get the mount point path */
-		path_name = dentry_path_raw(mnt->mnt.mnt_root, buf, PATH_MAX);
+		mnt_path.mnt = &mnt->mnt;
+		mnt_path.dentry = mnt->mnt.mnt_root;
+		path_name = d_path(&mnt_path, buf, PATH_MAX);
 		if (IS_ERR(path_name))
 			continue;
 
@@ -51,7 +54,6 @@ static int mymounts_show(struct seq_file *m, void *v)
 			   path_name);
 	}
 
-	path_put(&root_path);
 	kfree(buf);
 	return 0;
 }
