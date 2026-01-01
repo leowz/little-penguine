@@ -1,0 +1,3 @@
+# /etc/udev/rules.d/hello-usb-keyboard.rules
+# Load hello_usb_keyboard module when USB HID device is plugged in
+ACTION=="add", SUBSYSTEM=="usb", ATTR{bInterfaceClass}=="03", RUN+="/sbin/modprobe hello_usb_keyboard"
