@@ -2,38 +2,36 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/delay.h>
-#include <linux/slab.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("zweng");
 MODULE_DESCRIPTION("Little Penguin - assignment 03 module");
 
-static int do_work(int *my_int, int retval)
+static int do_work(int *my_int)
 {
 	int x;
 	int y = *my_int;
 	int z;
 
-	for (x = 0; x < my_int; ++x)
+	for (x = 0; x < *my_int; ++x)
 		udelay(10);
 
 	if (y < 10)
 		/* That was a long sleep, tell userspace about it */
-		pr_info("We slept a long time!");
+		pr_info("We slept a long time!\n");
 
 	z = x * y;
 
 	return z;
-	return 1;
 }
 
 static int __init my_init(void)
 {
 	int x = 10;
 
-	x = do_work(&x, x);
+	x = do_work(&x);
 
-	return x;
+	return 0;
 }
 
 static void __exit my_exit(void)
