@@ -1,5 +1,74 @@
 # USB Driver Basics for Linux Kernel
 
+## Assignment 04 Overview
+
+### What the Subject Asks
+
+**Task:** Modify the Hello World module from Assignment 01 so that it **automatically loads** when any USB keyboard is plugged in.
+
+The module should be triggered by userspace hotplug tools (depmod, kmod, udev, mdev, or systemd - depending on your distribution).
+
+**Turn in:**
+- A **udev rules file** (or equivalent for your system)
+- Your **updated module code**
+- **Proof** that it works
+
+### The Challenge
+
+The tricky part is making the module **auto-load**. This requires two things:
+
+1. **MODULE_DEVICE_TABLE** in the code - tells the kernel which devices this driver supports
+2. **udev rules file** (optional but recommended) - explicitly triggers module loading
+
+### Files in This Assignment
+
+| File | Purpose |
+|------|---------|
+| `hello_usb_keyboard.c` | The kernel module that registers as a USB driver |
+| `Makefile` | Build script for the module |
+| `hello-usb-keyboard.rules` | udev rules file to trigger auto-loading |
+
+---
+
+## The udev Rules File Explained
+
+The file `hello-usb-keyboard.rules` tells the udev daemon when to load our module:
+
+```
+ACTION=="add", SUBSYSTEM=="usb", ATTR{bInterfaceClass}=="03", RUN+="/sbin/modprobe hello_usb_keyboard"
+```
+
+| Part | Meaning |
+|------|---------|
+| `ACTION=="add"` | Trigger when a device is **plugged in** |
+| `SUBSYSTEM=="usb"` | Only for **USB** devices |
+| `ATTR{bInterfaceClass}=="03"` | Only if interface class is **03** (HID devices - keyboards, mice, etc.) |
+| `RUN+="/sbin/modprobe hello_usb_keyboard"` | Execute this command to **load the module** |
+
+### Installation
+
+```bash
+# Copy rules file to udev directory
+sudo cp hello-usb-keyboard.rules /etc/udev/rules.d/
+
+# Reload udev rules
+sudo udevadm control --reload-rules
+
+# Install the module to /lib/modules/
+sudo make install  # or manually: sudo cp hello_usb_keyboard.ko /lib/modules/$(uname -r)/
+
+# Update module dependencies
+sudo depmod -a
+```
+
+### Why Two Mechanisms?
+
+1. **MODULE_DEVICE_TABLE** creates entries in `/lib/modules/.../modules.alias`. On systems with kmod/systemd, this alone can trigger auto-loading.
+
+2. **udev rules** provide an explicit fallback that works on any Linux system, regardless of how module auto-loading is configured.
+
+---
+
 ## 1. How USB Works (High Level)
 
 ```
