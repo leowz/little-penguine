@@ -17,7 +17,7 @@ MODULE_DESCRIPTION("Little Penguin - Assignment 04: USB keyboard hello module");
  *  - Protocol: 0x01 (Keyboard)
  */
 static const struct usb_device_id hello_kbd_table[] = {
-	{ USB_INTERFACE_INFO(USB_CLASS_HID, 0, 0) },
+	{ USB_INTERFACE_INFO(USB_CLASS_HID, 1, 1) },
 	{ } /* terminating entry */
 };
 MODULE_DEVICE_TABLE(usb, hello_kbd_table);
